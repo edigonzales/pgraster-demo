@@ -7,8 +7,8 @@ docker run --rm --name edit-db -p 54321:5432 -v pgdata:/var/lib/postgresql/data:
 ```
 
 ```
-ALTER DATABASE edit SET postgis.enable_outdb_rasters = true;
-ALTER DATABASE edit SET postgis.gdal_enabled_drivers TO 'ENABLE_ALL';
+ALTER DATABASE edit SET postgis.enable_outdb_rasters = true; -- reconnect!!!!!!!!!!!
+ALTER DATABASE edit SET postgis.gdal_enabled_drivers TO 'ENABLE_ALL'; -- reconnect!!!!!!!!!!!
 
 CREATE SCHEMA agi_lidar_2019_ndsm;
 ```
@@ -51,6 +51,18 @@ SET
 ;
 ```
 
+```
+    SELECT 
+        t_id,
+        geometrie AS geometrie
+    FROM 
+        agi_dm01avsoch24.bodenbedeckung_boflaeche 
+    WHERE 
+        art = 'Gebaeude'
+    AND     
+        ST_Intersects(ST_SetSRID(ST_MakePoint(2611306, 1228084), 2056), geometrie)
+```
+
 
 ```
 WITH buildings AS 
@@ -62,9 +74,8 @@ WITH buildings AS
         agi_dm01avsoch24.bodenbedeckung_boflaeche 
     WHERE 
         art = 'Gebaeude'
-    --AND     
-        --t_id = 2260
-        --t_id = 3967
+    AND     
+        ST_Intersects(ST_SetSRID(ST_MakePoint(2611306, 1228084), 2056), geometrie)
 )
 ,
 clipped_tiles AS 
